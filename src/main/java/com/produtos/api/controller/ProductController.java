@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.produtos.api.model.ResourceException;
 import com.produtos.api.controller.util.URL;
 import com.produtos.api.model.Product;
 import com.produtos.api.services.ProductService;
@@ -30,42 +29,25 @@ public class ProductController {
 
 	@ApiOperation(value = "Criação de um produto")
 	@PostMapping("/products")
-	// @ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Object> createProduct(@RequestBody Product product) {
-		try {
-			productService.create(product);
-			return new ResponseEntity<>(product, HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(new ResourceException(HttpStatus.BAD_REQUEST.value(),
-					"Erro ao criar um novo produto na base de dados"), HttpStatus.BAD_REQUEST);
-		}
+		productService.create(product);
+		return new ResponseEntity<>(product, HttpStatus.CREATED);
 
 	}
 
 	@ApiOperation(value = "Atualização de um produto")
 	@PutMapping("/products/{id}")
 	public ResponseEntity<Object> updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
-		try {
-			if (!productService.findById(id).isEmpty()) {
-				product.setId(id);
-				productService.update(product);
-				return new ResponseEntity<>(product, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<>(
-					new ResourceException(HttpStatus.BAD_REQUEST.value(), "Erro ao realizar a alteração do produto"),
-					HttpStatus.BAD_REQUEST);
-		}
-
+		product.setId(id);
+		productService.update(product);
+		return new ResponseEntity<>(product, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "Busca de um produto por ID")
 	@GetMapping("/products/{id}")
-	public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws Exception {
-		return productService.findById(id).map(record -> new ResponseEntity<>(record, HttpStatus.OK))
-				.orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) {
+		Product obj = productService.findById(id).get();
+		return ResponseEntity.ok().body(obj);
 	}
 
 	@ApiOperation(value = "Lista de produtos")
@@ -91,11 +73,7 @@ public class ProductController {
 	@ApiOperation(value = "Deleção de um produto")
 	@DeleteMapping("/products/{id}")
 	public ResponseEntity<Object> deleteProduct(@PathVariable("id") Long id) {
-		if (!productService.findById(id).isEmpty()) {
-			productService.delete(id);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		productService.delete(id);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

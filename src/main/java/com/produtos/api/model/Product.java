@@ -10,6 +10,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import org.springframework.format.annotation.NumberFormat;
+
 @Entity
 public class Product {
 
@@ -28,8 +30,8 @@ public class Product {
 	private BigDecimal price;
 
 	public Product() {
-		super();
-		// TODO Auto-generated constructor stub
+//		super();
+//		// TODO Auto-generated constructor stub
 	}
 
 	public Product(Long id, @NotBlank String name, @NotBlank String description, @NotNull @Positive BigDecimal price) {
